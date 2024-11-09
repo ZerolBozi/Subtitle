@@ -1,0 +1,6 @@
+faster-whisper
+moviepy
+pysrt
+
+# if cuda >= 12, you can ignore this command
+# ctranslate2==3.24.0 # for cuda 11
