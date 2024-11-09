@@ -241,23 +241,33 @@ def set_subtitle_with_ffmpeg(
         print(line, end='')
 
 if __name__ == "__main__":
-    video_path = os.getcwd() + "\\test.mp4"
-    srt_path = os.getcwd() + "\\test.srt"
+   """
+   操作流程:
+   1. 設定影片和字幕檔案路徑
+   2. 選擇使用哪種方式嵌入字幕:
+       - moviepy: CPU處理，可以更詳細地客製化字幕樣式，但速度較慢
+       - ffmpeg: 支援GPU加速，處理速度快，建議使用這個方式
+   
+   使用 moviepy 的情況:
+   1. 需要先安裝 ImageMagick: https://imagemagick.org/script/download.php
+   2. 設定 ImageMagick 路徑
+   3. 呼叫 set_subtitle_with_moviepy 函數
+   
+   使用 ffmpeg 的情況 (推薦):
+   1. 需要先安裝 FFmpeg: https://www.gyan.dev/ffmpeg/builds/
+   2. 設定 FFmpeg 路徑 (可以設定環境變數或直接指定路徑)
+   3. 呼叫 set_subtitle_with_ffmpeg 函數
+   """
+   
+   # 1. 設定檔案路徑
+   video_path = os.getcwd() + "\\test.mp4"
+   srt_path = os.getcwd() + "\\test.srt"
 
-    # # use moviepy (CPU only)
-    # from moviepy.config import change_settings
+   # 2-1. 使用 moviepy 方式 (CPU only)
+   # from moviepy.config import change_settings
+   # change_settings({"IMAGEMAGICK_BINARY": r"C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI\\magick.exe"})
+   # set_subtitle_with_moviepy(video_path, srt_path)
 
-    # # https://imagemagick.org/script/download.php
-    # # 安裝 ImageMagick 並設定路徑
-    # change_settings({"IMAGEMAGICK_BINARY": r"C:\\Program Files\\ImageMagick-7.1.1-Q16-HDRI\\magick.exe"})
-
-    # set_subtitle_with_moviepy(video_path, srt_path)
-
-    """==================================================================================================="""
-
-    # use ffmpeg (GPU)
-    # https://www.gyan.dev/ffmpeg/builds/
-    # 安裝 ffmepg 並設定路徑 (如果指定路徑的話 就不需要設定環境變數)
-    # EXAMPLE
-    ffmpeg_path = r"C:\Program Files\ffmpeg\bin\ffmpeg.exe"
-    set_subtitle_with_ffmpeg(video_path, srt_path, ffmpeg_path)
+   # 2-2. 使用 ffmpeg 方式 (推薦，支援 GPU 加速)
+   ffmpeg_path = r"C:\Program Files\ffmpeg\bin\ffmpeg.exe"
+   set_subtitle_with_ffmpeg(video_path, srt_path, ffmpeg_path)

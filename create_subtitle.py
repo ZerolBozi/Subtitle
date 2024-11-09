@@ -6,6 +6,20 @@ from moviepy.editor import VideoFileClip
 from faster_whisper import WhisperModel
 
 def mp4_to_wav(video_path: str) -> str:
+    """
+    將 MP4 影片轉換成 WAV 音檔
+    
+    參數:
+        video_path (str): MP4檔案的完整路徑
+        
+    回傳:
+        str: 輸出的WAV檔案路徑
+        
+    用法:
+        video_path = "./test.mp4"
+        wav_path = mp4_to_wav(video_path)
+        ### 輸出: ./test.wav
+    """
     safe_title = os.path.splitext(os.path.basename(video_path))[0]
     save_path = os.path.dirname(video_path)
 
@@ -21,6 +35,22 @@ def mp4_to_wav(video_path: str) -> str:
     return new_path
 
 def transcribe_audio(video_path: str):
+    """
+    使用 Whisper 模型將音檔轉換為繁體中文字幕
+    
+    參數:
+        video_path (str): WAV檔案的完整路徑
+        
+    功能:
+        - 使用 Whisper large-v2 模型進行語音識別
+        - 自動輸出繁體中文字幕
+        - 生成 SRT 格式字幕檔
+        - 同時生成純文字檔案 (不含時間碼)
+        
+    用法:
+        transcribe_audio("./test.wav")
+        ### 會在相同目錄產生 .srt 和 .txt 檔案
+    """
     model = WhisperModel("large-v2", device="cuda")
     segments, _ = model.transcribe(video_path, beam_size=5, initial_prompt="輸出為繁體中文")
 
@@ -51,6 +81,22 @@ def transcribe_audio(video_path: str):
     srt_to_txt(srt_path)
 
 def srt_to_txt(fileName: str):
+    """
+    將 SRT 字幕檔轉換為純文字檔案
+    
+    參數:
+        fileName (str): SRT檔案的完整路徑
+        
+    功能:
+        - 移除時間碼標記
+        - 移除字幕編號
+        - 合併多餘的空行
+        - 輸出純文字檔案
+        
+    用法:
+        srt_to_txt("./test.srt")
+        ### 輸出: ./test.txt
+    """
     with open(os.path.join(f"{fileName}"), 'r', encoding='utf-8') as file:
         srt_content = file.read()
 
@@ -66,6 +112,19 @@ def srt_to_txt(fileName: str):
     print(f"數字和時間軸已移除，結果已儲存至{file_base_name}.txt檔案。")
 
 def process_subtitle_index(srt_path: str):
+    """
+    重新處理 SRT 檔案的字幕編號，確保順序正確
+    
+    參數:
+        srt_path (str): SRT檔案的完整路徑
+        
+    功能:
+        - 修正字幕編號順序
+        - 用於修改字幕後重新編號
+        
+    用法:
+        process_subtitle_index("./test.srt")
+    """
     subs = pysrt.open(srt_path)
 
     for i, sub in enumerate(subs, start=1):
@@ -74,12 +133,21 @@ def process_subtitle_index(srt_path: str):
     subs.save(srt_path)
 
 if __name__ == "__main__":
-    # use
-    video_path = os.getcwd() + "/test.mp4"
-    wav_path = mp4_to_wav(video_path)
+   """
+   操作流程:
+   1. 先將影片轉成音檔
+   2. 使用Whisper模型生成字幕檔
+   3. 如果有修改字幕檔內容，最後可以重新排序字幕編號
 
-    transcribe_audio(wav_path)
+   完整示範:
+   """
+   # 1. 指定影片路徑並轉換成WAV音檔
+   video_path = os.getcwd() + "/test.mp4"
+   wav_path = mp4_to_wav(video_path)
 
-    # process subtitle index
-    # srt_path = "./test.srt"
-    # process_subtitle_index(srt_path)
+   # 2. 產生字幕檔 (.srt和.txt)
+   transcribe_audio(wav_path)
+
+   # 3. 如果有修改字幕，可以重新排序字幕編號 (選用)
+   # srt_path = "./test.srt"
+   # process_subtitle_index(srt_path)
